@@ -140,8 +140,21 @@ AUTH_USER_MODEL = 'core.User'
 
 
 REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'core.apis.serializers.user.UserCreateSerializer',
+        'current_user': 'core.apis.serializers.user.UserSerializer',
+    }
 }

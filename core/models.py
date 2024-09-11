@@ -1,10 +1,22 @@
 from django.db import models 
 from django.contrib.auth.models import AbstractUser
 
+from django.contrib.auth.models import UserManager
+from django.db.models import Q
+
+class CustomUserManager(UserManager):
+
+    def get_by_natural_key(self, username):
+        return self.get(
+            Q(**{self.model.USERNAME_FIELD: username}) |
+            Q(**{self.model.EMAIL_FIELD: username})
+        )
+
+
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-
+    objects = CustomUserManager()
 
 
 class UserProfile(models.Model):
@@ -29,8 +41,8 @@ class UserProfile(models.Model):
 
     def unfollow(self, user):
         if self.is_following(user):
-            return
-        return Follow.objects.delete(user=user, follower_user=self)
+            return Follow.objects.delete(user=user, follower_user=self)
+        return
 
 
 class Follow(models.Model):
@@ -40,7 +52,7 @@ class Follow(models.Model):
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user_id','following_user_id'],  name="unique_followers")
+            models.UniqueConstraint(fields=['user_id','follower_user_id'],  name="unique_followers")
         ]
         ordering = ["-created_at"]
         
