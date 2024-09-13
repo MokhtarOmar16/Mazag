@@ -29,20 +29,21 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-    def follow(self, user):
-        if self.is_following(user):
-            return 
-        return Follow.objects.create(user=user, follower_user=self)
+    def follow(self, pk):
+        following = self.is_following(pk)
+        if not following:
+            Follow.objects.create(user_id=pk, follower_user=self)
+        return following
+
+    def is_following(self, pk):
+        return Follow.objects.filter(user_id=pk, follower_user=self).exists()
 
 
-    def is_following(self, user):
-        return Follow.objects.filter(user=user, follower_user=self).exists()
-
-
-    def unfollow(self, user):
-        if self.is_following(user):
-            return Follow.objects.delete(user=user, follower_user=self)
-        return
+    def unfollow(self, pk):
+        following =  self.is_following(pk)
+        if following:
+            Follow.objects.filter(user_id=pk, follower_user=self).delete()
+        return following
 
 
 class Follow(models.Model):
