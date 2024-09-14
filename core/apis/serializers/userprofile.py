@@ -10,7 +10,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserProfile
-        fields = ['user_id','first_name' ,"last_name",'id','bio', 'username', 'profile_picture', 'created_at', 'is_following']
+        fields = ['user_id','first_name' ,"last_name",'id','bio', 'username', 'profile_picture', 'created_at', 'is_following', "followers_count", "following_count"]
 
 
     def get_is_following(self, obj):

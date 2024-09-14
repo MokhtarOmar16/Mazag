@@ -24,6 +24,8 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    followers_count = models.IntegerField(default=0)
+    following_count = models.IntegerField(default=0)
     # is_private = models.BooleanField(default=False)
     
     def __str__(self):
@@ -32,30 +34,30 @@ class UserProfile(models.Model):
     def follow(self, pk):
         following = self.is_following(pk)
         if not following:
-            Follow.objects.create(user_id=pk, follower_user=self)
+            Follow.objects.create(following_id=pk, follower=self)
         return following
 
     def is_following(self, pk):
-        return Follow.objects.filter(user_id=pk, follower_user=self).exists()
+        return Follow.objects.filter(following_id=pk, follower=self).exists()
 
 
     def unfollow(self, pk):
         following =  self.is_following(pk)
         if following:
-            Follow.objects.filter(user_id=pk, follower_user=self).delete()
+            Follow.objects.filter(following_id=pk, follower=self).delete()
         return following
 
 
 class Follow(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
-    follower_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='followers')
+    follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='follower')
+    following = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user_id','follower_user_id'],  name="unique_followers")
+            models.UniqueConstraint(fields=['follower','following'],  name="unique_followers")
         ]
         ordering = ["-created_at"]
         
     def __str__(self) -> str:
-        return f"{self.follower_user} follows {self.user}"
+        return f"{self.follower} follows {self.following}"

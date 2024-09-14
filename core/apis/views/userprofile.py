@@ -40,9 +40,12 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,mixins.ListModelMixin, Generi
         
         return Response({"message": "Followed successfully" if not was_following else "Already following"}, status=status.HTTP_200_OK)
 
+
     @action(detail=True, methods=['DELETE'], permission_classes=[IsAuthenticated])
     def unfollow(self, request, pk):
         profile = UserProfile.objects.get(user_id=request.user.id)
         was_following = profile.unfollow(pk)
 
         return Response({"message": "Unfollowed successfully" if was_following else "You are not following this user"}, status=status.HTTP_200_OK)
+
+

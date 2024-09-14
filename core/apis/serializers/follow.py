@@ -1,7 +1,14 @@
 from rest_framework import serializers
 from core.models import Follow
 
-class FollowSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Follow
-        fields = ['id','user','following_user',"created_at"]
+# class FollowersSerializer(serializers.ModelSerializer):
+    
+#     class Meta:
+#         model = Follow
+#         fields = ['id','follower_user']
+        
+# class FollowingSerializer(serializers.ModelSerializer):
+    
+#     class Meta:
+#         model = Follow
+#         fields = ['id','user']
