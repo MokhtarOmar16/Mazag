@@ -7,9 +7,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 
 class UserProfileViewSet(mixins.RetrieveModelMixin,mixins.ListModelMixin, GenericViewSet):
     queryset= UserProfile.objects.select_related('user').prefetch_related('follower','following').all()
+    filter_backends = [SearchFilter]
+    search_fields = ['user__username', 'bio', 'user__first_name', 'user__last_name']
     
     
     def get_serializer_class(self):
@@ -18,10 +21,16 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,mixins.ListModelMixin, Generi
         return UserProfileSerializer  
     
     
+    
+    def get_permissions(self):
+        if self.action in ['me','follow','unfollow']:
+            return [IsAuthenticated()]
+        return [AllowAny()]
+        
     def get_serializer_context(self):
         return {"request":self.request}
 
-    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['GET', 'PUT'],)
     def me(self, request):
         profile = UserProfile.objects.get(user_id=request.user.id)
         if request.method == 'GET':
@@ -36,7 +45,7 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,mixins.ListModelMixin, Generi
 
     
 
-    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['POST'], )
     def follow(self, request, pk):
         profile_id_follower =request.user.data.id
         if str(pk) == str(profile_id_follower):
@@ -49,7 +58,7 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,mixins.ListModelMixin, Generi
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-    @action(detail=True, methods=['DELETE'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['DELETE'])
     def unfollow(self, request, pk):
         profile_id_follower =request.user.data.id
         if str(pk) == str(profile_id_follower):
@@ -60,24 +69,15 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,mixins.ListModelMixin, Generi
         if not done:
             return Response({"message":"you already not following this user"},status=status.HTTP_403_FORBIDDEN)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-    # @action(detail=True, methods=['GET'],permission_classes=[AllowAny])
-    # def followers(self, request, pk):
-    #     profile = self.get_object()
-    #     followers = profile.followers.all()
-    #     serializer = SimpleUserProfileSerializer(followers, many=1)
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
-        
     
-    @action(detail=True, methods=['GET'],permission_classes=[AllowAny])
+    @action(detail=True, methods=['GET'])
     def followers(self, request, pk):
         profile = self.get_object()
         followers = profile.follower.all()
         serializer = FollowersSerializer(followers, many=1)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    @action(detail=True, methods=['GET'],permission_classes=[AllowAny])
+    @action(detail=True, methods=['GET'])
     def following(self, request, pk):
         profile = self.get_object()
         following = profile.following.all()
