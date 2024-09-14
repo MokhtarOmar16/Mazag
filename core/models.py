@@ -13,6 +13,22 @@ class CustomUserManager(UserManager):
         )
 
 
+    def follow(self, pk):
+        following = self.is_following(pk)
+        if not following:
+            Follow.objects.create(following=self, follower_id=pk)
+        return not following
+
+    def is_following(self, pk):
+        return Follow.objects.filter(following=self, follower_id=pk).exists()
+
+
+    def unfollow(self, pk):
+        following =  self.is_following(pk)
+        if following:
+            Follow.objects.filter(following=self, follower_id=pk).delete()
+        return following
+
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -31,26 +47,11 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-    def follow(self, pk):
-        following = self.is_following(pk)
-        if not following:
-            Follow.objects.create(following=self, follower_id=pk)
-        return not following
-
-    def is_following(self, pk):
-        return Follow.objects.filter(following=self, follower_id=pk).exists()
-
-
-    def unfollow(self, pk):
-        following =  self.is_following(pk)
-        if following:
-            Follow.objects.filter(following=self, follower_id=pk).delete()
-        return following
 
 
 class Follow(models.Model):
-    follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
-    following = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='follower')
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
