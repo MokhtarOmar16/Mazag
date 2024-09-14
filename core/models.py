@@ -34,17 +34,17 @@ class UserProfile(models.Model):
     def follow(self, pk):
         following = self.is_following(pk)
         if not following:
-            Follow.objects.create(following_id=pk, follower=self)
-        return following
+            Follow.objects.create(following=self, follower_id=pk)
+        return not following
 
     def is_following(self, pk):
-        return Follow.objects.filter(following_id=pk, follower=self).exists()
+        return Follow.objects.filter(following=self, follower_id=pk).exists()
 
 
     def unfollow(self, pk):
         following =  self.is_following(pk)
         if following:
-            Follow.objects.filter(following_id=pk, follower=self).delete()
+            Follow.objects.filter(following=self, follower_id=pk).delete()
         return following
 
 
