@@ -1,6 +1,6 @@
 from core.models import UserProfile
 from ..serializers.userprofile import UserProfileSerializer, SimpleUserProfileSerializer
-from ..serializers.follow import FollowersSerializer
+from ..serializers.follow import FollowersSerializer, FollowingSerializer
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -62,18 +62,25 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,mixins.ListModelMixin, Generi
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-    @action(detail=True, methods=['GET'],permission_classes=[AllowAny])
-    def followers(self, request, pk):
-        profile = self.get_object()
-        followers = profile.followers.all()
-        serializer = SimpleUserProfileSerializer(followers, many=1)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # @action(detail=True, methods=['GET'],permission_classes=[AllowAny])
+    # def followers(self, request, pk):
+    #     profile = self.get_object()
+    #     followers = profile.followers.all()
+    #     serializer = SimpleUserProfileSerializer(followers, many=1)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
         
     
     @action(detail=True, methods=['GET'],permission_classes=[AllowAny])
     def followers(self, request, pk):
         profile = self.get_object()
-        following = profile.follower.all()
-        serializer = FollowersSerializer(following, many=1)
+        followers = profile.follower.all()
+        serializer = FollowersSerializer(followers, many=1)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['GET'],permission_classes=[AllowAny])
+    def following(self, request, pk):
+        profile = self.get_object()
+        following = profile.following.all()
+        serializer = FollowingSerializer(following, many=1)
         return Response(serializer.data, status=status.HTTP_200_OK)
         

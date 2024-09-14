@@ -49,8 +49,8 @@ class UserProfile(models.Model):
 
 
 class Follow(models.Model):
-    follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='follower')
-    following = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
+    follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
+    following = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='follower')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
