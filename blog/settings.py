@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     
     
     #pkgs for debugging
-    
+    'debug_toolbar',
     
     # pkgs for rest 
     'rest_framework',
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -126,7 +127,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -159,5 +162,7 @@ DJOSER = {
     'SERIALIZERS': {
         'user_create': 'core.apis.serializers.user.UserCreateSerializer',
         'current_user': 'core.apis.serializers.user.UserSerializer',
-    }
+    },
+
 }
+

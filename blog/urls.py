@@ -16,12 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     
     path(r'auth/', include('djoser.urls')),
     path(r'auth/', include('djoser.urls.jwt')),
-    path('profile/',include('core.urls'))
+    path('',include('core.urls'))
 
 ]
+
+if settings.DEBUG: 
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

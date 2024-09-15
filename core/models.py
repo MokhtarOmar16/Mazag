@@ -2,41 +2,41 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from django.contrib.auth.models import UserManager
-from django.db.models import Q
 
 class CustomUserManager(UserManager):
 
     def get_by_natural_key(self, username):
         return self.get(
-            Q(**{self.model.USERNAME_FIELD: username}) |
-            Q(**{self.model.EMAIL_FIELD: username})
+            models.Q(**{self.model.USERNAME_FIELD: username}) |
+            models.Q(**{self.model.EMAIL_FIELD: username})
         )
-
-
-    def follow(self, pk):
-        following = self.is_following(pk)
-        if not following:
-            Follow.objects.create(following=self, follower_id=pk)
-        return not following
-
-    def is_following(self, pk):
-        return Follow.objects.filter(following=self, follower_id=pk).exists()
-
-
-    def unfollow(self, pk):
-        following =  self.is_following(pk)
-        if following:
-            Follow.objects.filter(following=self, follower_id=pk).delete()
-        return following
-
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     objects = CustomUserManager()
+    following = models.ManyToManyField(
+        'self', through='Follow', symmetrical=False, related_name='followers'
+    )
+    def follow(self, target_user):
+        if self == target_user:
+            raise ValueError("You cannot follow yourself.")
 
+        if not self.is_following(target_user):
+            Follow.objects.create(follower=self, following=target_user)
+            return True
+        return False
+
+    def unfollow(self, target_user):
+        if self.is_following(target_user):
+            Follow.objects.filter(follower=self, following=target_user).delete()
+            return True
+        return False
+
+    def is_following(self, target_user):
+        return Follow.objects.filter(follower=self, following=target_user).exists()
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User,on_delete = models.CASCADE, related_name='data')
+    user = models.OneToOneField(User,on_delete = models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -50,13 +50,14 @@ class UserProfile(models.Model):
 
 
 class Follow(models.Model):
-    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
-    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_following')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_followers')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['follower','following'],  name="unique_followers")
+            models.UniqueConstraint(fields=['follower','following'],  name="unique_followers"),
+            models.CheckConstraint(check=~models.Q(follower=models.F("following")), name="no_self_follow")
         ]
         ordering = ["-created_at"]
         
