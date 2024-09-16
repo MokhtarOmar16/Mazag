@@ -17,6 +17,7 @@ class User(AbstractUser):
     following = models.ManyToManyField(
         'self', through='Follow', symmetrical=False, related_name='followers'
     )
+    # is_private = models.BooleanField(default=False)
     def follow(self, target_user):
         if self == target_user:
             raise ValueError("You cannot follow yourself.")
@@ -40,9 +41,6 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    followers_count = models.IntegerField(default=0)
-    following_count = models.IntegerField(default=0)
-    # is_private = models.BooleanField(default=False)
     
     def __str__(self):
         return self.user.username
