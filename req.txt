@@ -1,4 +1,4 @@
-
+dj-database-url==2.2.0
 celery==5.4.0
 cryptography==43.0.1
 dj-rest-auth==6.0.0
