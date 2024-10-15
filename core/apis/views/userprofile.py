@@ -22,7 +22,6 @@ class ProfileViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericVi
 
 
 class MeViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
-    serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
