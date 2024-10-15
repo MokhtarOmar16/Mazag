@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     
     # pkgs for rest 
     'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
     
     
@@ -122,6 +123,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
 
+
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False,
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -138,6 +140,7 @@ SIMPLE_JWT = {
 
 
 DJOSER = {
+    'TOKEN_MODEL': None, 
     'SERIALIZERS': {
         'user_create': 'core.apis.serializers.user.UserCreateSerializer',
         'current_user': 'core.apis.serializers.user.UserSerializer',

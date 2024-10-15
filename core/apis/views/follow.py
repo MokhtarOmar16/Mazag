@@ -44,17 +44,13 @@ class FollowersFollowingViewSet(ViewSet):
     def followers(self, request, pk=None):
         target_user = User.objects.defer("is_staff", "is_active", "date_joined", "email").get(pk=pk)
         # followers = Follow.objects.filter(following=target_user).select_related('follower__profile','follower')
-        followers = target_user.user_followers.\
-            select_related("follower", "follower__profile")\
-                .defer("follower__is_staff", "follower__is_active", "follower__date_joined", "follower__email").all()
+        followers = target_user.user_followers.select_related("follower", "follower__profile").all()
         serializer = FollowersSerializer(followers, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['GET'])
     def following(self, request, pk=None):
         target_user = User.objects.defer("is_staff", "is_active", "date_joined", "email").get(pk=pk)
-        following = target_user.user_following.\
-            select_related("following", "following__profile")\
-                .defer("following__is_staff", "following__is_active", "following__date_joined", "following__email").all()
+        following = target_user.user_following.select_related("following", "following__profile").all()
         serializer = FollowingSerializer(following, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

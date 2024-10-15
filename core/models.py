@@ -44,7 +44,15 @@ class UserProfile(models.Model):
     
     def __str__(self):
         return self.user.username
-
+    
+    def save(self, *args, **kwargs):
+        try:
+            this = UserProfile.objects.get(id=self.id)
+            if this.profile_picture != self.profile_picture:
+                this.profile_picture.delete(save=False)
+        except UserProfile.DoesNotExist:
+            pass  
+        super(UserProfile, self).save(*args, **kwargs)
 
 
 class Follow(models.Model):
