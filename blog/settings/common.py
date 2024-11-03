@@ -152,3 +152,9 @@ DJOSER = {
 
 CORS_ALLOWED_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://your-frontend-domain.com",
+    "*"
+]
