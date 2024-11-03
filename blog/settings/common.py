@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    
+    'corsheaders',
     
     #custom app 
     'core'
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -132,8 +133,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5 * 60) ,
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1) ,
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     'AUTH_HEADER_TYPES': ('JWT',),
 }
 
@@ -148,3 +149,5 @@ DJOSER = {
 
 }
 
+
+CORS_ALLOWED_ALL_ORIGINS = True
