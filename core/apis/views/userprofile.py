@@ -3,17 +3,13 @@ from ..serializers.userprofile import UserProfileSerializer, SimpleUserProfileSe
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import action
-from django.db.models import Count
-
-
-
+from ...pagination import CustomPagination
 
 class ProfileViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
     queryset = User.objects.select_related('profile').all()
     permission_classes = [AllowAny]
+    pagination_class = CustomPagination
+    
     def get_serializer_class(self):
         if self.action == 'list':
             return SimpleUserProfileSerializer

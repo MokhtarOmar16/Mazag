@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from ..serializers.follow import *
-
+from ...pagination import CustomPagination 
 
 
 User = get_user_model()
@@ -13,7 +13,7 @@ User = get_user_model()
 
 class FollowViewSet(ViewSet):
     permission_classes = [IsAuthenticated]
-
+    
     @action(detail=True, methods=['POST'])
     def follow(self, request, pk=None):
         user = request.user
@@ -39,18 +39,25 @@ class FollowViewSet(ViewSet):
 
 
 class FollowersFollowingViewSet(ViewSet):
+    pagination_class = CustomPagination
+    
     
     @action(detail=True, methods=['GET'])
-    def followers(self, request, pk=None):
-        target_user = User.objects.defer("is_staff", "is_active", "date_joined", "email").get(pk=pk)
-        # followers = Follow.objects.filter(following=target_user).select_related('follower__profile','follower')
+    def followers(self, request, pk):
+        target_user = User.objects.get(pk=pk)
         followers = target_user.user_followers.select_related("follower", "follower__profile").all()
-        serializer = FollowersSerializer(followers, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
+        
+        paginator = self.pagination_class()
+        paginated_followers = paginator.paginate_queryset(followers, request)
+        serializer = FollowersSerializer(paginated_followers, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
     @action(detail=True, methods=['GET'])
-    def following(self, request, pk=None):
-        target_user = User.objects.defer("is_staff", "is_active", "date_joined", "email").get(pk=pk)
+    def following(self, request, pk):
+        target_user = User.objects.get(pk=pk)
         following = target_user.user_following.select_related("following", "following__profile").all()
-        serializer = FollowingSerializer(following, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        paginator = self.pagination_class()
+        paginated_following = paginator.paginate_queryset(following, request)
+        serializer = FollowingSerializer(paginated_following, many=True)
+        return paginator.get_paginated_response(serializer.data)
