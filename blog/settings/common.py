@@ -148,7 +148,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Mazag APIs',
     'DESCRIPTION': '''Mazag is an innovative platform that aligns with your current mood, offering a personalized experience through music, events, activities, and content recommendations. Whether you're seeking relaxation, inspiration, or excitement, Mazag curates suggestions and tools based on how you feel, helping you make the most of every moment. With social sharing and mental well-being features, Mazag creates a space where you can connect, express yourself, and discover new ways to elevate your day.''',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': 1,
+    'SERVE_INCLUDE_SCHEMA': 0,
 }
 
 
