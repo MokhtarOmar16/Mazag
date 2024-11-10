@@ -86,4 +86,4 @@ Werkzeug==3.0.4
 whitenoise==6.7.0
 zope.event==5.0
 zope.interface==7.0.3
-drf-spectacular==2.6.0
+drf-spectacular
