@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from ..serializers.follow import *
 from ...pagination import CustomPagination 
-
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -17,7 +17,7 @@ class FollowViewSet(ViewSet):
     @action(detail=True, methods=['POST'])
     def follow(self, request, pk=None):
         user = request.user
-        target_user = User.objects.get(pk=pk)
+        target_user = get_object_or_404(User, pk=pk)
         if user == target_user:
             return Response({"message": "You cannot follow yourself"}, status=status.HTTP_403_FORBIDDEN)
 
@@ -28,7 +28,7 @@ class FollowViewSet(ViewSet):
     @action(detail=True, methods=['DELETE'])
     def unfollow(self, request, pk=None):
         user = request.user
-        target_user = User.objects.get(pk=pk)
+        target_user = get_object_or_404(User, pk=pk)
 
         if user == target_user:
             return Response({"message": "You cannot unfollow yourself"}, status=status.HTTP_403_FORBIDDEN)
@@ -44,7 +44,7 @@ class FollowersFollowingViewSet(ViewSet):
     
     @action(detail=True, methods=['GET'])
     def followers(self, request, pk):
-        target_user = User.objects.get(pk=pk)
+        target_user = get_object_or_404(User, pk=pk)
         followers = target_user.user_followers.select_related("follower", "follower__profile").all()
         
         paginator = self.pagination_class()
@@ -54,7 +54,7 @@ class FollowersFollowingViewSet(ViewSet):
 
     @action(detail=True, methods=['GET'])
     def following(self, request, pk):
-        target_user = User.objects.get(pk=pk)
+        target_user = get_object_or_404(User, pk=pk)
         following = target_user.user_following.select_related("following", "following__profile").all()
             
         paginator = self.pagination_class()
