@@ -17,7 +17,7 @@ class BaseUserProfileSerializer(serializers.ModelSerializer):
     def get_is_following(self, obj):
         request = self.context.get('request', None)
         if request and request.user.is_authenticated:
-            return obj.followers.filter(id=request.user.id).exists()
+            return obj.user_followers.filter(id=request.user.id).exists()
         return False
     
     def get_cached_count(self, obj, cache_key_prefix, related_field, timeout=300):
