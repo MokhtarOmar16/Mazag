@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'corsheaders',
-
+    'cloudinary_storage',
+    'cloudinary',
     
     #custom app 
     'core',
@@ -43,6 +44,12 @@ INSTALLED_APPS = [
     
     
 ]
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv("CLOUD_STORAGE_NAME"),
+    'API_KEY': os.getenv("CLOUD_API_KEY"),
+    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
