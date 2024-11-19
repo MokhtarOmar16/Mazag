@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'corsheaders',
+
     
     #custom app 
     'core',
@@ -107,6 +108,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
 
 INTERNAL_IPS = [
     '127.0.0.1',
