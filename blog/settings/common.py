@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
+import cloudinary_storage
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -45,11 +46,7 @@ INSTALLED_APPS = [
     
 ]
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv("CLOUD_STORAGE_NAME"),
-    'API_KEY': os.getenv("CLOUD_API_KEY"),
-    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
-}
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -193,3 +190,13 @@ EMAIL_HOST_USER = os.getenv('GMAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': "deuxgekfl",
+    'API_KEY': "541994778352984",
+    'API_SECRET':"zgpl5c6Vg_Wv9YpklTEHJubnDXI",
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
