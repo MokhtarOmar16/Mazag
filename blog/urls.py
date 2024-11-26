@@ -12,7 +12,7 @@ urlpatterns = [
     
     # user endpoints 
     path('auth/', include('djoser.urls.jwt')), # Djoser endpoints 
-    path('/', include('users.urls')),  
+    path('', include('users.urls')),  
     
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'), # swagger docs endpoint    
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
