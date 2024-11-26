@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=1, required=1)
     class Meta:
         model = User
-        fields = ['id', 'email','username' ,"first_name","last_name", 'password', 'password2']
+        fields = ['id', 'email', 'username',"first_name","last_name", 'password', 'password2']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_password(self, value):
