@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from core.models import Follow
+from ...models import Follow
 from .userprofile import SimpleUserProfileSerializer
 
 User = get_user_model()
