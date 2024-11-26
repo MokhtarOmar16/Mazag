@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from core.models import Follow, User
+from ...models import User
 from django.core.cache import cache
-from django.db.models import Count
-
 
 
 class BaseUserProfileSerializer(serializers.ModelSerializer):
@@ -17,7 +15,7 @@ class BaseUserProfileSerializer(serializers.ModelSerializer):
     def get_is_following(self, obj):
         request = self.context.get('request', None)
         if request and request.user.is_authenticated:
-            return Follow.objects.filter(follower=request.user , following=obj).exists()
+            return request.user.is_following(obj)
         return False
     
     def get_cached_count(self, obj, cache_key_prefix, related_field, timeout=300):
@@ -90,6 +88,8 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
         profile = instance.profile
 
         profile.bio = profile_data.get('bio', profile.bio)
+
+        
         if 'profile_picture' in profile_data:
             profile.profile_picture = profile_data.get('profile_picture', profile.profile_picture)
         profile.save()

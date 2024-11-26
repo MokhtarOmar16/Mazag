@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
-import cloudinary_storage
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -40,7 +39,7 @@ INSTALLED_APPS = [
     'cloudinary',
     
     #custom app 
-    'core',
+    'users',
     'posts'
     
     
@@ -124,16 +123,18 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = 'media/'
+# MEDIA_ROOT = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'core.User'
-
+AUTH_USER_MODEL = 'users.User'
+AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailBackend',
+]
 
 
 REST_FRAMEWORK = {
@@ -163,10 +164,6 @@ SPECTACULAR_SETTINGS = {
 
 DJOSER = {
     'TOKEN_MODEL': None, 
-    'SERIALIZERS': {
-        'user_create': 'core.apis.serializers.user.UserCreateSerializer',
-        'current_user': 'core.apis.serializers.user.UserSerializer',
-    },
 
 }
 
@@ -194,9 +191,9 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': "deuxgekfl",
-    'API_KEY': "541994778352984",
-    'API_SECRET':"zgpl5c6Vg_Wv9YpklTEHJubnDXI",
+    'CLOUD_NAME': "dp3aijobb",
+    'API_KEY': "251497421882178",
+    'API_SECRET':"dmxuY3q5NhJLSeIsE-lx9iWT19c",
 }
-
+MEDIA_URL = '/media/'  # or any prefix you choose
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

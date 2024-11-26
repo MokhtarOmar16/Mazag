@@ -1,25 +1,23 @@
-from core.models import User
+from ...models import User
 from ..serializers.userprofile import UserProfileSerializer, SimpleUserProfileSerializer , UpdateUserProfileSerializer
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from ...pagination import CustomPagination
+from django.db.models import Prefetch
 
-class ProfileViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
-    queryset = User.objects.select_related('profile').all()
+class   ProfileViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
     permission_classes = [AllowAny]
     pagination_class = CustomPagination
     
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)    
+    
+    def get_queryset(self):
+        queryset = User.objects.select_related('profile').all()
+        if self.action == 'list' and self.request.user.is_authenticated:
+            queryset = queryset.exclude(pk=self.request.user.pk)
+        return queryset
+    
+    
     def get_serializer_class(self):
         if self.action == 'list':
             return SimpleUserProfileSerializer
@@ -40,4 +38,5 @@ class MeViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewS
     def get_object(self):
         return self.request.user
     
+
 

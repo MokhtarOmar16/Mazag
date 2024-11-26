@@ -1,19 +1,12 @@
-from django.db import models 
 from django.contrib.auth.models import AbstractUser
-
-from django.contrib.auth.models import UserManager
-
-class CustomUserManager(UserManager):
-
-    def get_by_natural_key(self, username):
-        return self.get(
-            models.Q(**{self.model.USERNAME_FIELD: username}) |
-            models.Q(**{self.model.EMAIL_FIELD: username})
-        )
-
+from django.db import models
+from .managers import UserManager
+# Create your models here.
 class User(AbstractUser):
+    objects = UserManager()
+    
     email = models.EmailField(unique=True)
-    objects = CustomUserManager()
+    REQUIRED_FIELDS = ['email']
     following = models.ManyToManyField(
         'self', through='Follow', symmetrical=False, related_name='followers'
     )
@@ -36,6 +29,9 @@ class User(AbstractUser):
     def is_following(self, target_user):
         return Follow.objects.filter(follower=self, following=target_user).exists()
 
+    class Meta:
+        ordering = ['id']
+    
 class UserProfile(models.Model):
     user = models.OneToOneField(User,on_delete = models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, null=True)
@@ -45,15 +41,6 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
     
-    def save(self, *args, **kwargs):
-        try:
-            this = UserProfile.objects.get(id=self.id)
-            if this.profile_picture != self.profile_picture:
-                this.profile_picture.delete(save=False)
-        except UserProfile.DoesNotExist:
-            pass  
-        super(UserProfile, self).save(*args, **kwargs)
-
 
 class Follow(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_following')
