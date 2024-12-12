@@ -2,6 +2,9 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core.cache import cache
+from django.core.mail import send_mail
+import random
 
 User = get_user_model()
 
@@ -99,3 +102,73 @@ class ChangePasswordSerializer(serializers.Serializer):
         user.set_password(self.validated_data["password"])
         user.save()
         return user
+    
+    
+
+
+class basePasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+    def validate_email(self, value):
+        user = User.objects.filter(email = value).exists()
+        print(user)
+        if user:
+            return value
+        else :
+            raise serializers.ValidationError("This email is not exist.")
+
+class PasswordResetRequestSerializer(basePasswordResetSerializer):
+    
+        
+    def save(self):
+        email = self.validated_data['email']
+        code = cache.get(email)
+        if not code:
+            code = f"{random.randint(100000, 999999)}"
+            cache.set(email, code, timeout=3600)
+            
+        send_mail(
+            subject="Password Reset Code",
+            message=f"Your password reset code is:  {code}. \nIf you did not make this request then please ignore this email.",
+            from_email=None,  # Uses DEFAULT_FROM_EMAIL in settings.py
+            recipient_list=[email],
+        )
+        
+    def to_representation(self, instance):
+        return {"message":"code sent successfully."}
+    
+
+class PasswordResetCodeSerializer(basePasswordResetSerializer):
+    code = serializers.CharField()
+    new_password = serializers.CharField()
+    
+    def validate_new_password(self, value):
+        try:
+            validate_password(value)
+        except Exception as e:
+            raise serializers.ValidationError(e)
+        return value
+    
+    def validate_email(self, value):
+        super().validate_email(value)
+        if cache.get(value):
+            return value
+        raise serializers.ValidationError("There is no code sent to this email")
+
+    def save(self, **kwargs):
+        code = self.validated_data["code"] 
+        email = self.validated_data['email']
+        password =  self.validated_data['new_password']
+        if code != cache.get(email):
+            raise serializers.ValidationError("this code is incorrect")
+        user = User.objects.get(email=email)
+        if user.check_password(password):
+            raise serializers.ValidationError("This is an old password")
+        user.set_password(password)
+        user.save()
+        cache.delete(email)
+        return user
+
+    def to_representation(self, instance):
+        return {"message": "password change successfully."}

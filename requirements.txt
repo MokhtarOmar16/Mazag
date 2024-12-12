@@ -89,3 +89,4 @@ zope.interface==7.0.3
 drf-spectacular
 cloudinary==1.41.0
 django-cloudinary-storage==0.3.0
+

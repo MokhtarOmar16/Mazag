@@ -35,9 +35,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'corsheaders',
-    'cloudinary_storage',
-    'cloudinary',
-    
+
     #custom app 
     'users',
     'posts'
@@ -164,7 +162,7 @@ SPECTACULAR_SETTINGS = {
 
 DJOSER = {
     'TOKEN_MODEL': None, 
-
+    "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS": ["http://localhost:3000"]
 }
 
 
@@ -174,7 +172,8 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://only-freinds.vercel.app"
+    "http://129.168.1.8:5173",
+    "https://mazag.vercel.app"
 ]
 
 
@@ -186,14 +185,24 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('GMAIL_USER')
 EMAIL_HOST_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Social
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_CLIENT_ID")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "openid",
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ["first_name", "last_name"]
 
 
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': "dp3aijobb",
-    'API_KEY': "251497421882178",
-    'API_SECRET':"dmxuY3q5NhJLSeIsE-lx9iWT19c",
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
 }
-MEDIA_URL = '/media/'  # or any prefix you choose
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+
+DEFAULT_FROM_EMAIL = "MAZAG APP"
