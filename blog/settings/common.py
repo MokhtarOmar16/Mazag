@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'corsheaders',
-
+    'social_django',
+    
     #custom app 
     'users',
     'posts'
@@ -56,6 +57,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Social
+    
+    "social_django.middleware.SocialAuthExceptionMiddleware",
 ]
 
 ROOT_URLCONF = 'blog.urls'
@@ -121,8 +125,8 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# MEDIA_URL = 'media/'
-# MEDIA_ROOT = "/media/"
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -132,6 +136,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 AUTHENTICATION_BACKENDS = [
     'users.backends.EmailBackend',
+    # Social
+    'social_core.backends.google.GoogleOAuth2',
 ]
 
 
@@ -162,7 +168,9 @@ SPECTACULAR_SETTINGS = {
 
 DJOSER = {
     'TOKEN_MODEL': None, 
-    "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS": ["http://localhost:3000"]
+    'SERIALIZERS': {
+    },
+    "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS": ["http://localhost:5173/auth/google", "https://mazag.vercel.app/auth/google"]
 }
 
 
